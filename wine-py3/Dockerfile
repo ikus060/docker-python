@@ -2,9 +2,6 @@ FROM buildpack-deps:buster
 
 ENV DEBIAN_FRONTEND noninteractive
 
-ARG PYTHON_VERSION=3.7.5
-ARG PYINSTALLER_VERSION=3.6
-
 # we need wine for this all to work, Use APT repo
 RUN set -x \
     && dpkg --add-architecture i386 \
@@ -13,6 +10,9 @@ RUN set -x \
     && apt-get clean \
     && wget -nv -O /usr/local/bin/winetricks 'https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks' \
     && chmod +x /usr/local/bin/winetricks
+
+ARG PYTHON_VERSION=3.7.5
+ARG PYINSTALLER_VERSION=3.6
 
 # wine settings
 ENV WINEARCH win32
@@ -39,11 +39,13 @@ RUN set -x \
     && echo 'wine '\''C:\Python37\Scripts\pip.exe'\'' "$@"' > /usr/bin/pip \
     && echo 'wine '\''C:\Python37\Scripts\pyinstaller.exe'\'' "$@"' > /usr/bin/pyinstaller \
     && echo 'wine '\''C:\Python37\Scripts\pyupdater.exe'\'' "$@"' > /usr/bin/pyupdater \
+    && echo 'wine '\''C:\Python37\Scripts\\tox.exe'\'' "$@"' > /usr/bin/tox \
     && echo 'assoc .py=PythonScript' | wine cmd \
     && echo 'ftype PythonScript=c:\Python37\python.exe "%1" %*' | wine cmd \
     && while pgrep wineserver >/dev/null; do echo "Waiting for wineserver"; sleep 1; done \
-    && chmod +x /usr/bin/python /usr/bin/easy_install /usr/bin/pip /usr/bin/pyinstaller /usr/bin/pyupdater \
+    && chmod +x /usr/bin/python /usr/bin/easy_install /usr/bin/pip /usr/bin/pyinstaller /usr/bin/pyupdater /usr/bin/tox \
     && (pip install -U pip || true) \
+    && pip install tox nose coverage \
     && rm -rf /tmp/.wine-*
 
 ENV W_DRIVE_C=/wine/drive_c

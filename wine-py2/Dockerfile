@@ -6,7 +6,7 @@ ARG WINE_VERSION=wine
 ARG PYTHON_VERSION=2.7.16
 ARG PYINSTALLER_VERSION=3.3
 
-# we need wine for this all to work, so we'll use the PPA
+# we need wine for this all to work
 RUN set -x \
     && dpkg --add-architecture i386 && apt-get update && apt-get install -y --no-install-recommends wine wine32 xvfb xauth cabextract winbind \
     && apt-get clean \
